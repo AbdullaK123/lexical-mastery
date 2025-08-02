@@ -14,13 +14,10 @@ export default function WordCountPlugin() {
         return editor.registerTextContentListener(() => {
             editor.read(() => {
                 const content = $getRoot().getTextContent()
-                const newWordCount = getWordCount(content)
-                if (!content) {
-                    setWordCount(0)
-                }
-                if (newWordCount !== wordCount) {
-                    setWordCount(newWordCount)
-                }
+                setWordCount(prev => {      
+                    const newWordCount = getWordCount(content)
+                    return prev === newWordCount ? prev : newWordCount
+                })
             })
         })
     }, [editor])
