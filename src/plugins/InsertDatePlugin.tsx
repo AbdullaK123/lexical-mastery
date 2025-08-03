@@ -10,7 +10,7 @@ import {
     type TextNode
 } from "lexical";
 import { useEffect } from "react";
-import { $createMentionNode, MentionNode } from "../nodes/MentionNode";
+import { DateNode, type DateString, $createDateNode } from "../nodes/DateNode";
 
 // ============================================================================
 // TYPES
@@ -23,8 +23,8 @@ type SelectionInfo = {
     isValid: boolean;
 };
 
-type MentionMatch = {
-    username: string;
+type DateMatch = {
+    date: DateString;
     start: number;
     end: number;
     found: boolean;
@@ -68,63 +68,63 @@ function setCursorAfterNode(node: any): void {
 }
 
 // ============================================================================
-// MENTION PATTERN DETECTION
+// DATE PATTERN DETECTION (FIXED)
 // ============================================================================
 
 /**
- * Searches for "/mention username" pattern before cursor position
+ * Searches for "/@datestring" pattern before cursor position
  * Returns found: false if no pattern is detected
  */
-function findMentionPattern(text: string, offset: number): MentionMatch {
+function findDatePattern(text: string, offset: number): DateMatch {
     // Only look at text before cursor
     const textBeforeCursor = text.substring(0, offset);
     
-    // Look for pattern: /mention followed by space and username
-    const match = textBeforeCursor.match(/\/mention\s+(\S+)/);
+    // Look for pattern: /@ followed by date string (no spaces allowed in date)
+    const match = textBeforeCursor.match(/@(\S+)/);
     
     if (!match) {
-        return { username: "", start: 0, end: 0, found: false };
+        return { date: "", start: 0, end: 0, found: false };
     }
     
     // Find where the match starts in the text
     const start = textBeforeCursor.lastIndexOf(match[0]);
     
     return {
-        username: match[1],        // The captured username
-        start,                     // Where "/mention" starts
-        end: start + match[0].length,  // Where the pattern ends
+        date: match[1] as DateString,
+        start,
+        end: start + match[0].length,
         found: true
     };
 }
 
 // ============================================================================
-// NODE MANIPULATION
+// NODE MANIPULATION (FIXED)
 // ============================================================================
 
 /**
- * Replaces "/mention username" text with actual mention node
+ * Replaces "/@datestring" text with actual date node
  * Also handles any remaining text and cursor positioning
  */
-function insertMentionNode(textNode: TextNode, mention: MentionMatch, originalText: string): void {
-    const { username, start, end } = mention;
+function insertDateNode(textNode: TextNode, dateInfo: DateMatch, originalText: string): void {
+    const { date, start, end } = dateInfo;
     
-    // Split original text around the mention pattern
-    const before = originalText.substring(0, start);     // Text before "/mention"
-    const after = originalText.substring(end);          // Text after "username"
+    // Split original text around the date pattern
+    const before = originalText.substring(0, start);
+    const after = originalText.substring(end);
     
     // Step 1: Replace current text with "before" part
     textNode.setTextContent(before);
     
-    // Step 2: Insert the mention node after current text
-    const mentionNode = $createMentionNode(username);
-    textNode.insertAfter(mentionNode);
+    // Step 2: Insert the date node after current text
+    const dateNode = $createDateNode(date);
+    textNode.insertAfter(dateNode);
     
-    // Step 3: Handle remaining text after mention (if any)
-    let lastInsertedNode: TextNode | MentionNode = mentionNode;
+    // Step 3: Handle remaining text after date (if any)
+    let lastInsertedNode: TextNode | DateNode = dateNode;
     
     if (after.trim()) {
         const afterNode = $createTextNode(after);
-        mentionNode.insertAfter(afterNode);
+        dateNode.insertAfter(afterNode);
         lastInsertedNode = afterNode;
     }
     
@@ -134,13 +134,14 @@ function insertMentionNode(textNode: TextNode, mention: MentionMatch, originalTe
     
     // Step 5: Position cursor after the space
     setCursorAfterNode(spaceNode);
+
 }
 
 // ============================================================================
 // MAIN PLUGIN
 // ============================================================================
 
-export default function InsertMentionPlugin() {
+export default function InsertDatePlugin() {
     const [editor] = useLexicalComposerContext();
     
     useEffect(() => {
@@ -148,28 +149,35 @@ export default function InsertMentionPlugin() {
             KEY_DOWN_COMMAND,
             (event: KeyboardEvent) => {
                 // Only trigger on space key
-                if (event.key !== " ") return false;
+                if (event.key !== ";") return false;
                 
                 editor.update(() => {
                     // Get current selection and validate it
                     const selection = $getSelection();
-                    if (!selection || !$isRangeSelection(selection)) return;
+                    if (!selection || !$isRangeSelection(selection)) {
+                        return;
+                    }
 
                     const selectionInfo = getSelectionInfo(selection);
-                    if (!selectionInfo.isValid) return;
+                    if (!selectionInfo.isValid) {
+                        return;
+                    }
                     
                     // Extract what we need to work with
                     const { node, text, offset } = selectionInfo;
                     
-                    // Look for mention pattern before cursor
-                    const mentionMatch = findMentionPattern(text, offset);
-                    if (!mentionMatch.found) return;
+                    // Look for date pattern before cursor
+                    const dateMatch = findDatePattern(text, offset);
+                    if (!dateMatch.found) {
+                        return;
+                    }
+                    
                     
                     // Pattern found! Prevent space from being added normally
                     event.preventDefault();
                     
-                    // Replace the pattern with mention node
-                    insertMentionNode(node, mentionMatch, text);
+                    // Replace the pattern with date node
+                    insertDateNode(node, dateMatch, text);
                 });
                 
                 return false;

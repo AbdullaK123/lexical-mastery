@@ -44,6 +44,14 @@ main {
   border-radius: 4px;
 }
 
+.date {
+  background: red;
+  color: #fff;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+
 
 .word-counter {
   padding: 1rem 2rem;

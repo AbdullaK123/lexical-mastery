@@ -10,13 +10,15 @@ import { ListItemNode, ListNode } from '@lexical/list';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import { MentionNode } from './nodes/MentionNode';
 import InsertMentionPlugin from './plugins/InsertMentionPlugin';
+import { DateNode } from './nodes/DateNode';
+import InsertDatePlugin from './plugins/InsertDatePlugin';
 
 function App() {
 
   const initialConfig = {
     namespace: "My Editor",
     theme: {},
-    nodes: [ListNode, ListItemNode, MentionNode],
+    nodes: [ListNode, ListItemNode, MentionNode, DateNode],
     onError: (error: Error) => {
       throw error;
     }
@@ -29,6 +31,7 @@ function App() {
           <div className='editor-container'>
             <ListPlugin />
             <InsertMentionPlugin />
+            <InsertDatePlugin />
             <EditorHeader />
             <RichTextPlugin
               contentEditable={<ContentEditable className='editor' />}
