@@ -21,8 +21,8 @@ main {
 
 .placeholder {
   position: absolute;
-  top: 3rem;
-  left: 2rem;
+  top: 6rem;
+  left: 3rem;
   color: #999;
   pointer-events: none; 
 }
@@ -30,14 +30,39 @@ main {
 .editor {
   width: 100%;
   height: 100%;
-  padding: 2rem;
+  padding: 5rem;
+  padding-left: 3rem;
   border-radius: 2rem;
+  border: 1px solid black;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4)
 }
+
+
 
 .word-counter {
   padding: 1rem 2rem;
-  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.toolbar {
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.editor-header {
   position: absolute;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+  border-bottom: 1px solid black;
+}
+
+.toolbar button.active {
+  background: #444;
+  color: #fff;
 }

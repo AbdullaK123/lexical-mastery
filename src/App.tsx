@@ -5,14 +5,17 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
 import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
 import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
-// import SelectionLoggerPlugin from './plugins/SelectionLoggerPlugin';
-import WordCountPlugin from './plugins/WordCountPlugin';
+import EditorHeader from './plugins/EditorHeader';
+import { ListItemNode, ListNode } from '@lexical/list';
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import FindAndReplacePlugin from './plugins/FindAndReplacePlugin';
 
 function App() {
 
   const initialConfig = {
     namespace: "My Editor",
     theme: {},
+    nodes: [ListNode, ListItemNode],
     onError: (error: Error) => {
       throw error;
     }
@@ -23,7 +26,8 @@ function App() {
       <h1>Lexical Editor Mastery</h1>
         <LexicalComposer initialConfig={initialConfig}>
           <div className='editor-container'>
-            <WordCountPlugin />
+            <ListPlugin />
+            <EditorHeader />
             <RichTextPlugin
               contentEditable={<ContentEditable className='editor' />}
               placeholder={<span className='placeholder'>Start typing...</span>}
@@ -31,7 +35,7 @@ function App() {
             />
             <HistoryPlugin />
             <AutoFocusPlugin />
-            {/* <SelectionLoggerPlugin /> */}
+            <FindAndReplacePlugin />
           </div>
         </LexicalComposer>
     </main>
