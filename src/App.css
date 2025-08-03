@@ -37,6 +37,12 @@ main {
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4)
 }
 
+.mention {
+  background: #1976d2;
+  color: #fff;
+  padding: 0 4px;
+  border-radius: 4px;
+}
 
 
 .word-counter {

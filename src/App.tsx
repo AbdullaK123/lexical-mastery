@@ -8,14 +8,15 @@ import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
 import EditorHeader from './plugins/EditorHeader';
 import { ListItemNode, ListNode } from '@lexical/list';
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
-import FindAndReplacePlugin from './plugins/FindAndReplacePlugin';
+import { MentionNode } from './nodes/MentionNode';
+import InsertMentionPlugin from './plugins/InsertMentionPlugin';
 
 function App() {
 
   const initialConfig = {
     namespace: "My Editor",
     theme: {},
-    nodes: [ListNode, ListItemNode],
+    nodes: [ListNode, ListItemNode, MentionNode],
     onError: (error: Error) => {
       throw error;
     }
@@ -27,6 +28,7 @@ function App() {
         <LexicalComposer initialConfig={initialConfig}>
           <div className='editor-container'>
             <ListPlugin />
+            <InsertMentionPlugin />
             <EditorHeader />
             <RichTextPlugin
               contentEditable={<ContentEditable className='editor' />}
@@ -35,7 +37,6 @@ function App() {
             />
             <HistoryPlugin />
             <AutoFocusPlugin />
-            <FindAndReplacePlugin />
           </div>
         </LexicalComposer>
     </main>
